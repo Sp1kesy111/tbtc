@@ -8,9 +8,12 @@ type Handle interface {
 }
 
 // Relay is an interface that provides ability to interact with Relay contract.
+// All byte values are represented in the little-endian system.
+//
+// TODO: Consider using something similar to btc.Digest to avoid
+//  endianess problems.
 type Relay interface {
-	// GetBestKnownDigest returns the best known digest. Returned digest is
-	// presented in little-endian system.
+	// GetBestKnownDigest returns the best known digest.
 	GetBestKnownDigest() ([32]uint8, error)
 
 	// IsAncestor checks if a digest is an ancestor of the given descendant.

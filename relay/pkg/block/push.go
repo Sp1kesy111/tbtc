@@ -117,7 +117,9 @@ func (f *Forwarder) updateBestHeader(newBestHeader *btc.Header) error {
 		return fmt.Errorf("could not get best known digest: [%v]", err)
 	}
 
-	currentBestHeader, err := f.btcChain.GetHeaderByDigest(currentBestDigest)
+	currentBestHeader, err := f.btcChain.GetHeaderByDigest(
+		btc.NewLittleEndianDigest(currentBestDigest),
+	)
 	if err != nil {
 		return fmt.Errorf(
 			"could not get current best header by digest: [%v]",
@@ -136,7 +138,7 @@ func (f *Forwarder) updateBestHeader(newBestHeader *btc.Header) error {
 	limit := newBestHeader.Height - lastCommonAncestor.Height + 1
 
 	return f.hostChain.MarkNewHeaviest(
-		lastCommonAncestor.Hash,
+		lastCommonAncestor.Hash.LittleEndianBytes(),
 		currentBestHeader.Raw,
 		newBestHeader.Raw,
 		big.NewInt(limit),

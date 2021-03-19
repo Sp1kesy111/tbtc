@@ -12,32 +12,31 @@ type Handle interface {
 	GetHeaderByHeight(height *big.Int) (*Header, error)
 
 	// GetHeaderByDigest returns the block header for given digest (hash).
-	// The digest should be passed in little-endian system.
-	GetHeaderByDigest(digest [32]uint8) (*Header, error)
+	GetHeaderByDigest(digest *Digest) (*Header, error)
 }
 
 // Header represents a Bitcoin block header.
 type Header struct {
-	// Hash is the hash of the block
-	Hash [32]byte
-	// Height is the height of the block in the blockchain
+	// Hash is the hash of the block.
+	Hash *Digest
+	// Height is the height of the block in the blockchain.
 	Height int64
-	// PrevHash is the hash of the previous block
-	PrevHash [32]byte
-	// MerkleRoot is the hash of the root of the Merkle tree of transcations in
-	// the block
-	MerkleRoot [32]byte
-	// Raw is the serialized data of the block header; 80-bytes long
+	// PrevHash is the hash of the previous block.
+	PrevHash *Digest
+	// MerkleRoot is the hash of the root of the merkle tree of transactions in
+	// the block.
+	MerkleRoot *Digest
+	// Raw is the serialized data of the block header; 80-bytes long.
 	Raw []byte
 }
 
 func (h *Header) String() string {
 	return fmt.Sprintf(
 		"Hash: %s, Height: %d, PrevHash: %s, MerkleRoot: %s, Raw: %s",
-		hex.EncodeToString(h.Hash[:]),
+		h.Hash,
 		h.Height,
-		hex.EncodeToString(h.PrevHash[:]),
-		hex.EncodeToString(h.MerkleRoot[:]),
+		h.PrevHash,
+		h.MerkleRoot,
 		hex.EncodeToString(h.Raw),
 	)
 }

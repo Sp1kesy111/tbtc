@@ -96,15 +96,24 @@ func (rc *remoteChain) GetHeaderByHeight(height *big.Int) (*btc.Header, error) {
 		)
 	}
 
+	// treat all digests as little-endian representation
 	relayHeader := &btc.Header{
-		Hash:       blockHeader.BlockHash(),
-		PrevHash:   blockHeader.PrevBlock,
-		MerkleRoot: blockHeader.MerkleRoot,
+		Hash:       btc.NewLittleEndianDigest(blockHeader.BlockHash()),
+		PrevHash:   btc.NewLittleEndianDigest(blockHeader.PrevBlock),
+		MerkleRoot: btc.NewLittleEndianDigest(blockHeader.MerkleRoot),
 		Raw:        rawHeader,
 		Height:     height.Int64(),
 	}
 
 	return relayHeader, nil
+}
+
+// GetHeaderByDigest returns the block header for given digest (hash).
+func (rc *remoteChain) GetHeaderByDigest(
+	digest *btc.Digest,
+) (*btc.Header, error) {
+	// TODO: implementation
+	return nil, nil
 }
 
 func testConnection(client *rpcclient.Client, timeout time.Duration) error {
@@ -126,6 +135,8 @@ func testConnection(client *rpcclient.Client, timeout time.Duration) error {
 	}
 }
 
+// serializeHeader serializes header fields using little-endian representation
+// and returns concatenation of them.
 func serializeHeader(header *wire.BlockHeader) ([]byte, error) {
 	var buffer bytes.Buffer
 
@@ -135,13 +146,4 @@ func serializeHeader(header *wire.BlockHeader) ([]byte, error) {
 	}
 
 	return buffer.Bytes(), nil
-}
-
-// GetHeaderByDigest returns the block header for given digest (hash).
-// The digest should be passed in little-endian system.
-func (rc *remoteChain) GetHeaderByDigest(
-	digest [32]uint8,
-) (*btc.Header, error) {
-	// TODO: implementation
-	return nil, nil
 }
